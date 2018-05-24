@@ -35,7 +35,9 @@ Doxygen を実行するたびに修正するのは、ほんの僅かではあり
 - オペレーティングシステム： Windows 7 Professional 64bit
 - アプリケーション：
     - Doxygen: 1.8.14 (Cygwin 版)
-    - LaTeX: e-pTeX 3.14159265-p3.8.1-180226-2.6 (utf8.euc) (TeX Live 2018/Cygwin)
+    - upLaTeX: e-pTeX 3.14159265-p3.8.1-180226-2.6 (utf8.euc) (TeX Live 2018/Cygwin)
+
+なお、upLaTeX ではなく pLaTeX を使用する場合は、少し修正が必要になると思います。
 
 - - - - - - - - -
 

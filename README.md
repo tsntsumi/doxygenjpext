@@ -173,7 +173,7 @@ Doxygen の出力では、このスタイルシートを読み込んだ後に `h
     \AtBeginDocument{%
       \hypersetup{%
         unicode=false%
-        bookmarks=true,bookmarksnumbered=true, % enable bookmarks
+        bookmarks=true,bookmarksnumbered=true,% enable bookmarks
         setpagesize=false}%
     }
 

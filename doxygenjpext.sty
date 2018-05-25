@@ -31,7 +31,7 @@
 %%% SOFTWARE.
 %
 % Specifing the drivers to class and packages
-\PassOptionsToClass{uplatex,dvipdfmx}{book}
+\PassOptionsToClass{dvipdfmx,uplatex}{book}
 \PassOptionsToPackage{dvipdfmx}{adjustbox}
 \PassOptionsToPackage{dvipdfmx}{color}
 \PassOptionsToPackage{dvipdfmx}{xcolor}
@@ -42,18 +42,23 @@
 \usepackage[deluxe,jis2004,uplatex]{otf}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}% \usepackage{fix-cm}
-% To use japanese gothic fonts
-\renewcommand{\kanjifamilydefault}{\gtdefault}
 % To use japanese bold fonts with uplatex
+\DeclareFontShape{JY2}{hmc}{bc}{n}{<->ssub*hmc/bx/n}{}
+\DeclareFontShape{JT2}{hmc}{bc}{n}{<->ssub*hmc/bx/n}{}
 \DeclareFontShape{JY2}{hgt}{bc}{n}{<->ssub*hgt/bx/n}{}
 \DeclareFontShape{JT2}{hgt}{bc}{n}{<->ssub*hgt/bx/n}{}
+%
+% Select bold fonts in titlepage environment
+\RequirePackage{xifthen}
+\RequirePackage{letltxmacro}
+\LetLtxMacro\originaltitlepage\titlepage\relax
+\renewenvironment{titlepage}{%
+  \begin{originaltitlepage}\gtfamily\sffamily\bfseries%
+}{\end{originaltitlepage}}
 %
 % Load hyperref package with dvipdfmx and pxjahyper for japanese environment
 \RequirePackage[dvipdfmx,pagebackref=true]{hyperref}
 \usepackage{pxjahyper}
-%
-\RequirePackage{xifthen}
-\RequirePackage{letltxmacro}
 %
 % Omit loading hyperref package with pdftex or ps2pdf
 \LetLtxMacro\originalusepackage\usepackage\relax
@@ -62,6 +67,20 @@
 }
 %
 \AtBeginDocument{%
+  % Change serif fonts in body text
+  \renewcommand{\kanjifamilydefault}{\mcdefault}
+  \renewcommand{\familydefault}{\rmdefault}
+  % Select sanserif fonts in section headers
+  \allsectionsfont{%
+    \gtfamily\sffamily%
+    \fontseries{bc}\selectfont%
+    \color{darkgray}%
+  }
+  \renewcommand{\DoxyLabelFont}{%
+    \gtfamily\sffamily%
+    \fontseries{bc}\selectfont%
+    \color{darkgray}%
+  }
   % Overwriting and adding hyperref options
   \hypersetup{%
     unicode=false,%   unicode to turn off for fix broken kanji encodings

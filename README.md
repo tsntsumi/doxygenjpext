@@ -6,6 +6,7 @@ Doxygen の LaTeX 出力で日本語を使う（LaTeX スタイルシートで�
     - [イグトランスの頭の中（のかけら）: 2015年版](https://dev.activebasic.com/egtra/2015/06/29/814/)
     - [LaTeX の「アレなデフォルト」傾向と対策](https://qiita.com/zr_tex8r/items/297154ca924749e62471)
     - [TeX Wiki / hyperref](https://texwiki.texjp.org/?hyperref)
+    - [Doxygenの設定メモ](http://www.mindto01s.com/2017/04/11/023e9cbe_c712_48d3_9667_0d381a06cfb1.html)
 
 概要
 ----
@@ -110,7 +111,7 @@ PDF の作成
 
 各種パッケージに、 `dvipdfmx` または `dvipdfm` ドライバを指定します。
 
-    \PassOptionsToClass{uplatex,dvipdfmx}{book}
+    \PassOptionsToClass{dvipdfmx,uplatex}{book}
     \PassOptionsToPackage{dvipdfmx}{adjustbox}
     \PassOptionsToPackage{dvipdfmx}{color}
     \PassOptionsToPackage{dvipdfmx}{xcolor}
@@ -125,21 +126,48 @@ PDF の作成
     \usepackage[T1]{fontenc}
     \usepackage{lmodern}
 
-### 本文をゴシック体に変更
-
-Doxygen は書体にサンセリフ体を指定していますが、
-和文の書体は指定していないためデフォルトの明朝体が使われてしまい、
-欧文と和文がアンバランスになってしまいます。
-そこで、本文の和文書体をゴシック体に変更します。
-
-    \renewcommand{\kanjifamilydefault}{\gtdefault}
-
 ### 見出しなどの和文書体をデフォルトの太字にする
 
 Doxygen の出力に合わせて、見出しが太字になるようにします。
 
+    \DeclareFontShape{JY2}{hmc}{bc}{n}{<->ssub*hmc/bx/n}{}
+    \DeclareFontShape{JT2}{hmc}{bc}{n}{<->ssub*hmc/bx/n}{}
     \DeclareFontShape{JY2}{hgt}{bc}{n}{<->ssub*hgt/bx/n}{}
     \DeclareFontShape{JT2}{hgt}{bc}{n}{<->ssub*hgt/bx/n}{}
+
+表紙の見出しはゴシックのボールド体にします。
+
+    \RequirePackage{xifthen}
+    \RequirePackage{letltxmacro}
+    \LetLtxMacro\originaltitlepage\titlepage\relax
+    \renewenvironment{titlepage}{%
+      \begin{originaltitlepage}\gtfamily\sffamily\bfseries%
+    }{\end{originaltitlepage}}
+
+### 本文を明朝体に変更
+
+Doxygen は書体にサンセリフ体を指定していますが、
+和文の書体は指定していないためデフォルトの明朝体が使われてしまい、
+欧文と和文がアンバランスになってしまいます。
+そこで、本文の書体をローマンと明朝体に変更します。
+ただし見出しとラベルはサンセリフ体にします。
+
+    \AtBeginDocument{%
+      % Change serif fonts in body text
+      \renewcommand{\kanjifamilydefault}{\mcdefault}
+      \renewcommand{\familydefault}{\rmdefault}
+      % Select sanserif fonts in section headers
+      \allsectionsfont{%
+        \gtfamily\sffamily%
+        \fontseries{bc}\selectfont%
+        \color{darkgray}%
+      }
+      \renewcommand{\DoxyLabelFont}{%
+        \gtfamily\sffamily%
+        \fontseries{bc}\selectfont%
+        \color{darkgray}%
+      }
+    }
 
 ### PDF のハイパーリンク対応
 

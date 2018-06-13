@@ -1,9 +1,11 @@
 %%%
-%%% Extra settings for creating PDF from doxygen output by using dvipdfmx
+%%% Fake book class to generating Japanese PDF from doxygen outputs
+%%%
+%%% Extra settings for creating japanese PDF from doxygen output by using dvipdfmx
 %%%
 %%% To use setting the below line into Doxyfile:
 %%%
-%%%   LATEX_EXTRA_STYLESHEET = doxygenjpext.sty
+%%%   LATEX_EXTRA_FILES = book.cls
 %%%
 %%% Use doxygen to generate the refman.tex and compile it to DVI with uplatex.
 %%% Then execute dvipdfmx to convert PDF from DVI.
@@ -30,39 +32,20 @@
 %%% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 %%% SOFTWARE.
 %
-% Specifing the drivers to class and packages
-\PassOptionsToPackage{dvipdfmx}{adjustbox}
-\PassOptionsToPackage{dvipdfmx}{color}
-\PassOptionsToPackage{dvipdfmx}{xcolor}
-\PassOptionsToPackage{dvipdfmx}{graphicx}
-\PassOptionsToPackage{dvipdfm}{geometry}
-%
-% To fix font metric
-\usepackage[deluxe,jis2004,uplatex]{otf}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}% \usepackage{fix-cm}
-%
-% Load hyperref package with dvipdfmx and pxjahyper for japanese environment
-\RequirePackage[dvipdfmx,pagebackref=true,unicode]{hyperref}
-\usepackage{pxjahyper}
-%
-\RequirePackage{xifthen}
-\RequirePackage{letltxmacro}
-%
-% Omit loading hyperref package with pdftex or ps2pdf
-\LetLtxMacro\originalusepackage\usepackage\relax
-\renewcommand\usepackage[2][]{%
-  \ifthenelse{\equal{#2}{hyperref}}{}{\originalusepackage[#1]{#2}}%
-}
-%
-\AtBeginDocument{%
-  % Overwriting and adding hyperref options
-  \hypersetup{%
-    bookmarks=true,bookmarksnumbered=true,% enable bookmarks
-    setpagesize=false}}%
-\@ifclassloaded{jsbook}{%
-  \AtBeginDocument{%
-    \LetLtxMacro\originalprintindex@fixaddcontentsline\printindex\relax
-    \renewcommand\printindex{%
-      \renewcommand\addcontentsline[3]{}%
-      \originalprintindex@fixaddcontentsline}}}{}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{book}[2018/06/10 v0.1 Fake book class to generating Japanese PDF]
+
+% Passes and class options to the underlying jsbook class
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{jsbook}}
+\ProcessOptions
+
+% Load LaTeX's jsbook class with the uplatex and the dvipdfmx options
+\LoadClass[uplatex,dvipdfmx,report]{jsbook}%
+
+\renewcommand{\prechaptername}{}%
+\renewcommand{\postchaptername}{}%
+% Expand margins to fit doxygen output contents
+\setlength{\textwidth}{\fullwidth}%
+\setlength{\evensidemargin}{\oddsidemargin}%
+\setlength\footskip{2\baselineskip}%
+\addtolength{\textheight}{-2\baselineskip}%

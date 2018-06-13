@@ -1,9 +1,9 @@
 %%%
-%%% Extra settings for creating PDF from doxygen output by using dvipdfmx
+%%% To fix hyperlink command in the doxygen output
 %%%
 %%% To use setting the below line into Doxyfile:
 %%%
-%%%   LATEX_EXTRA_STYLESHEET = doxygenjpext.sty
+%%%   LATEX_EXTRA_STYLESHEET = hyperlinkfix.sty
 %%%
 %%% Use doxygen to generate the refman.tex and compile it to DVI with uplatex.
 %%% Then execute dvipdfmx to convert PDF from DVI.
@@ -30,39 +30,18 @@
 %%% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 %%% SOFTWARE.
 %
-% Specifing the drivers to class and packages
-\PassOptionsToPackage{dvipdfmx}{adjustbox}
-\PassOptionsToPackage{dvipdfmx}{color}
-\PassOptionsToPackage{dvipdfmx}{xcolor}
-\PassOptionsToPackage{dvipdfmx}{graphicx}
-\PassOptionsToPackage{dvipdfm}{geometry}
-%
-% To fix font metric
-\usepackage[deluxe,jis2004,uplatex]{otf}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}% \usepackage{fix-cm}
-%
-% Load hyperref package with dvipdfmx and pxjahyper for japanese environment
-\RequirePackage[dvipdfmx,pagebackref=true,unicode]{hyperref}
-\usepackage{pxjahyper}
-%
-\RequirePackage{xifthen}
-\RequirePackage{letltxmacro}
-%
-% Omit loading hyperref package with pdftex or ps2pdf
-\LetLtxMacro\originalusepackage\usepackage\relax
-\renewcommand\usepackage[2][]{%
-  \ifthenelse{\equal{#2}{hyperref}}{}{\originalusepackage[#1]{#2}}%
-}
-%
 \AtBeginDocument{%
-  % Overwriting and adding hyperref options
-  \hypersetup{%
-    bookmarks=true,bookmarksnumbered=true,% enable bookmarks
-    setpagesize=false}}%
-\@ifclassloaded{jsbook}{%
-  \AtBeginDocument{%
-    \LetLtxMacro\originalprintindex@fixaddcontentsline\printindex\relax
-    \renewcommand\printindex{%
-      \renewcommand\addcontentsline[3]{}%
-      \originalprintindex@fixaddcontentsline}}}{}
+  % For exchange hyperlink to hyperref because doxygen used wrong hyperlink command
+  \LetLtxMacro\originalhyperlink\hyperlink\relax
+  \def\hyperlinkexch@hyperlinkfix#1#2{\hyperref[#1]{#2}}
+  % Use the original hyperlink instead of hyperref in the tableofcontents command
+  \LetLtxMacro\originaltableofcontents\tableofcontents\relax
+  \def\tableofcontents{%
+    \let\hyperlink\originalhyperlink\originaltableofcontents%
+    \let\hyperlink\hyperlinkexch@hyperlinkfix}%
+  % Use the original hyperlink instead of hyperref in the printindex command
+  \LetLtxMacro\originalprintindex@hyperlinkfix\printindex\relax
+  \renewcommand\printindex{%
+    \let\hyperlink\originalhyperlink\relax\originalprintindex@hyperlinkfix%
+    \let\hyperlink\hiperlinkexch@hyperlinkfix}%
+}
